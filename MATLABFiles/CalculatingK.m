@@ -35,15 +35,25 @@ compArray = {
 
 % This is for 14.203% EOPO, 10% SC Updated
 disp('14.203% EOPO, 10% SC')
-polTop = 18.8847;
-saltTop = 6.6631;
-polBottom = 0.1908;
-saltBottom = 19.9873;
+% Old numbers
+% polTop = 18.8847;
+% saltTop = 6.6631;
+% polBottom = 0.1908;
+% saltBottom = 19.9873;
+% New numbers, relaxed density assumption
+polTop = 19.22937;
+saltTop = 6.543072;
+rhoTop = 1.068007;%density of top phase
+polBottom = 0.2341185;
+saltBottom = 19.60721;
+rhoBottom = 1.150995;%density of bottom phase
+rhoTot = 1.089967;%density of overall ATPS
+VR = 3;
 MW_pol = 12000;
 MW_TriCit = 258.06;
 MW_CitAcid = 192.194;
 SaltRatio = 2.6;%weight ratio of trisodium citrate to citric acid
-[xpolTop, xTop, xpolBottom, xBottom] = comp_calc(polTop, saltTop, polBottom, saltBottom, MW_pol, MW_TriCit, MW_CitAcid, SaltRatio);
+[xpolTop, xTop, xpolBottom, xBottom] = compCalc(polTop, saltTop, polBottom, saltBottom, rhoTop, rhoBottom, rhoTot, VR, MW_pol, MW_TriCit, MW_CitAcid, SaltRatio);
 xTotal = 2.583778197e-5; %overall mole fraction of TMB/DAB
 comp_top = [xpolTop 0 0];
 comp_bottom = [xpolBottom 0 0];

@@ -1,7 +1,7 @@
 %% Tie line estimation: estimated tie lines assuming weight ratio = volume ratio
 clear all, clc
 
-%Mechuk parameters for EOPO-SC
+%Merchuk parameters for EOPO-SC
 a = 71.8490104;
 b = -0.461965134;
 c = 0.000488689386;
@@ -28,12 +28,19 @@ figure(1) %defines figure 1
 VR = 3;
 p = [10 14.203];
 
+%Densities of components
+rho_poly = 1.092;
+rho_salt = 1.769;
+rho_water = 1;
+
 %Initialize range of possible slopes
 m_range = linspace(-10,-1/1000,10000);
 intercept = p(2)-(p(1)*m_range);
 weightratios = zeros(1,10000);
 bottomlength = zeros(1,10000);
 toplength = zeros(1,10000);
+bottomdensity = zeros(1,10000);
+topdensity = zeros(1,10000);
 ints = zeros(10000,4);
 
 %Iterate through all possible slopes. For each slope, calculate
@@ -56,7 +63,9 @@ ints(k,:) = [xint1 xint2 yint1 yint2];
 
 bottomlength(k) = sqrt((yint1-p(2))^2+(p(1)-xint1)^2);
 toplength(k) = sqrt((p(2)-yint2)^2+(xint2-p(1))^2);
-weightratios(k) = toplength(k)/bottomlength(k);
+bottomdensity(k) = (xint1/100)*rho_salt + (yint1/100)*rho_poly + ((100 - xint1 - yint1)/100)*rho_water;
+topdensity(k) = (xint2/100)*rho_salt + (yint2/100)*rho_poly + ((100 - xint2 - yint2)/100)*rho_water;
+weightratios(k) = (toplength(k)*topdensity(k))/(bottomlength(k)*bottomdensity(k));
 end
 
 %Find index of tie line slope that corresponds to a ratio of tie line
@@ -68,6 +77,8 @@ xin1(1) = ints(ratiopos(1),1);
 xin2(1) = ints(ratiopos(1),2);
 yin1(1) = ints(ratiopos(1),3);
 yin2(1) = ints(ratiopos(1),4);
+
+rho_tot = (p(1)/100)*rho_salt + (p(2)/100)*rho_poly + ((100 - p(1) - p(2))/100)*rho_water;
 
 %Graph tie line and curve
 tieline(1,:) =fslope(1)*(x_range) + yintercept(1);
@@ -85,10 +96,14 @@ hold on %plots the phase diagram datapoints
 
 %Print Equation of Tie Line
 fprintf("Slope of Tie Line: %d\n", fslope(1));
-fprintf("Y-Int of Tie Line: %d\n", yintercept(1));
+fprintf("Y-Int of Tie Line: %d\n\n", yintercept(1));
 
 %Print Intersection Points
-fprintf("Polymer Content in Polymer-Rich Phase: %d\n", xin1(1));
-fprintf("Salt Content in Polymer-Rich Phase: %d\n", yin1(1));
-fprintf("Polymer Content in Salt-Rich Phase: %d\n", xin2(1));
+fprintf("Polymer Content in Polymer-Rich Phase: %d\n", yin1(1));
+fprintf("Salt Content in Polymer-Rich Phase: %d\n", xin1(1));
+fprintf("Density of Polymer-Rich Phase: %d\n\n", bottomdensity(ratiopos(1)));
+fprintf("Polymer Content in Salt-Rich Phase: %d\n", yin2(1));
 fprintf("Salt Content in Salt-Rich Phase: %d\n", xin2(1));
+fprintf("Density of Salt-Rich Phase: %d\n\n", topdensity(ratiopos(1)));
+
+fprintf("Overall Density: %d\n", rho_tot);
