@@ -1,4 +1,4 @@
-function[xpolTop, xTop, xpolBottom, xBottom] = compCalc(polTop, saltTop, polBottom, saltBottom, rhoTop, rhoBottom, rhoTot, VR, MW_pol, MW_salt1, MW_salt2, SaltRatio)
+function[xpolTop, xTop, xpolBottom, xBottom] = compCalc(polTop, saltTop, polBottom, saltBottom, rhoTop, rhoBottom, VR, MW_pol, MW_salt1, MW_salt2, SaltRatio)
 MW_H2O = 18.02;
 %Salt Ratio should describe the weight ratio of salt1:salt2 in the salt
 %stock solution
@@ -6,11 +6,9 @@ MW_H2O = 18.02;
 %Calculating masses of top and bottom phases from densities,
 %volume ratio and total mass
 mTot = 0.5; %experimental mass of ATPSs
-VTot = mTot/rhoTot; %total volume
-VTop = (VR/(VR+1))*VTot;
-VBottom = (1/(VR+1))*VTot;
-mTop = rhoTop*VTop;
-mBottom = rhoBottom*VBottom;
+% these equations can be derived by performing a mass balance
+mBottom = mTot/((rhoTop/rhoBottom)*VR + 1);
+mTop = (rhoTop/rhoBottom)*VR*mBottom;
 
 %Assuming all concentrations are in % values from 0-100
 m_polTop = (polTop/100) * mTop;
